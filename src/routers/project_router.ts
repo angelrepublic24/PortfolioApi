@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 const uploads = multer({storage})
 projectRouter.post('/project', verifyToken, validateProjectRegister, handleValidationErrors, create)
 projectRouter.get('/projects', getAll)
-projectRouter.get('/project/:id', getById)
+projectRouter.get('/projects/:id', getById)
 projectRouter.patch('/project/:id', verifyToken, update)
 projectRouter.delete('/project/:id', verifyToken, remove)
 projectRouter.post('/upload', verifyToken, uploads.single("file") , upload)
