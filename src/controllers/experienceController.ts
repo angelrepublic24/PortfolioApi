@@ -55,7 +55,7 @@ const create = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
   try {
-    const experience = await Experience.find().sort('-date');
+    const experience = await Experience.find({ hidden: { $ne: true } }).sort('order -date');
     res.status(200).json({
       experience,
     });
@@ -65,6 +65,51 @@ const getAll = async (req: Request, res: Response) => {
       error,
       message: error.message || "Internal server error",
     });
+  }
+};
+
+const getAllAdmin = async (req: Request, res: Response) => {
+  try {
+    const experience = await Experience.find().sort('order -date');
+    res.status(200).json({ experience });
+    return;
+  } catch (error) {
+    res.status(500).json({ error, message: error.message });
+  }
+};
+
+const reorder = async (req: Request, res: Response) => {
+  try {
+    const { items } = req.body as { items: { id: string; order: number }[] };
+    if (!Array.isArray(items)) {
+      res.status(400).json({ message: "items array is required" });
+      return;
+    }
+    await Promise.all(
+      items.map((item) =>
+        Experience.findByIdAndUpdate(item.id, { order: item.order })
+      )
+    );
+    res.status(200).json({ ok: true });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const toggleVisibility = async (req: Request, res: Response) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      res.status(404).json({ message: "Experience not found" });
+      return;
+    }
+    (experience as any).hidden = !(experience as any).hidden;
+    await experience.save();
+    res.status(200).json({ ok: true, experience });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 };
 
@@ -138,14 +183,11 @@ const update = async (req: Request, res: Response) => {
       updateFields.date = dateArray;
     }
 
-    // Procesar otros campos
+    // Procesar otros campos (ignorando los protegidos)
+    const PROTECTED = new Set(["_id", "user", "createdAt", "updatedAt", "__v", "lang", "date"]);
     Object.keys(body).forEach((key) => {
-      if (
-        body[key] !== undefined &&
-        key !== "lang" &&
-        key !== "date" &&
-        body[key] !== existingExperience[key]
-      ) {
+      if (PROTECTED.has(key)) return;
+      if (body[key] !== undefined && body[key] !== existingExperience[key]) {
         updateFields[key] = body[key];
       }
     });
@@ -186,4 +228,4 @@ const remove = async (req: Request, res: Response) => {
   }
 };
 
-export { create, getAll, update, remove};
+export { create, getAll, getAllAdmin, getById, update, remove, toggleVisibility, reorder };

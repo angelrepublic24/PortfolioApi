@@ -1,5 +1,5 @@
 import express from 'express';
-import { create, deleteImage, getAll, getById, remove, update, upload } from '../controllers/projectController';
+import { create, deleteImage, getAll, getAllAdmin, getById, remove, reorder, toggleVisibility, update, upload } from '../controllers/projectController';
 import { validateProjectRegister } from '../helpers/validation';
 import { validationResult } from 'express-validator';
 import multer from 'multer'
@@ -26,8 +26,11 @@ const storage = multer.diskStorage({
 const uploads = multer({storage})
 projectRouter.post('/project', verifyToken, validateProjectRegister, handleValidationErrors, create)
 projectRouter.get('/projects', getAll)
+projectRouter.get('/admin/projects', verifyToken, getAllAdmin)
+projectRouter.patch('/projects/reorder', verifyToken, reorder)
 projectRouter.get('/projects/:id', getById)
 projectRouter.patch('/project/:id', verifyToken, update)
+projectRouter.patch('/project/:id/visibility', verifyToken, toggleVisibility)
 projectRouter.delete('/project/:id', verifyToken, remove)
 projectRouter.post('/upload', verifyToken, uploads.single("file") , upload)
 projectRouter.delete("/delete-image", verifyToken, deleteImage)

@@ -7,6 +7,7 @@ interface IProject {
     image?: string;
     user: ObjectId;
     date: number;
+    hidden?: boolean;
 }
 declare const Project: import("mongoose").Model<IProject, {}, {}, {}, import("mongoose").Document<unknown, {}, IProject> & IProject & {
     _id: import("mongoose").Types.ObjectId;

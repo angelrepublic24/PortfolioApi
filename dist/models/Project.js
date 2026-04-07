@@ -27,6 +27,10 @@ const projectSchema = new mongoose_1.Schema({
     date: {
         type: Number,
         required: true,
+    },
+    hidden: {
+        type: Boolean,
+        default: false,
     }
 }, {
     timestamps: true

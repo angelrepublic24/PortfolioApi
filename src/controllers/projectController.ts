@@ -36,7 +36,7 @@ const create = async (req: Request, res: Response) => {
 
 const getAll = async (req: Request, res: Response) => {
   try {
-    const projects = await Project.find().sort('-date -createdAt');
+    const projects = await Project.find({ hidden: { $ne: true } }).sort('order -date -createdAt');
     res.status(200).json({
       projects,
     });
@@ -45,6 +45,51 @@ const getAll = async (req: Request, res: Response) => {
     res.status(500).json({
       error,
     });
+  }
+};
+
+const getAllAdmin = async (req: Request, res: Response) => {
+  try {
+    const projects = await Project.find().sort('order -date -createdAt');
+    res.status(200).json({ projects });
+    return;
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const reorder = async (req: Request, res: Response) => {
+  try {
+    const { items } = req.body as { items: { id: string; order: number }[] };
+    if (!Array.isArray(items)) {
+      res.status(400).json({ message: "items array is required" });
+      return;
+    }
+    await Promise.all(
+      items.map((item) =>
+        Project.findByIdAndUpdate(item.id, { order: item.order })
+      )
+    );
+    res.status(200).json({ ok: true });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const toggleVisibility = async (req: Request, res: Response) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      res.status(404).json({ message: "Project not found" });
+      return;
+    }
+    project.hidden = !project.hidden;
+    await project.save();
+    res.status(200).json({ ok: true, project });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 };
 
@@ -76,7 +121,9 @@ const update = async (req: Request, res: Response) => {
     }
 
     const updateFields: Partial<typeof existinProject> = {};
+    const PROTECTED = new Set(["_id", "user", "createdAt", "updatedAt", "__v"]);
     Object.keys(body).forEach((key) => {
+      if (PROTECTED.has(key)) return;
       if (body[key] !== undefined && body[key] !== existinProject[key]) {
         updateFields[key] = body[key];
       }
@@ -192,4 +239,4 @@ const getImage = async (req: Request, res: Response) => {
 
   }
 };
-export { create, getAll, getById, update, remove, upload, getImage, deleteImage };
+export { create, getAll, getAllAdmin, getById, update, remove, upload, getImage, deleteImage, toggleVisibility, reorder };

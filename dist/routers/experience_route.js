@@ -18,7 +18,10 @@ const handleValidationErrors = (req, res, next) => {
 };
 experienceRouter.post('/experience', verifyToken_1.verifyToken, validation_1.validateExperienceRegister, handleValidationErrors, experienceController_1.create);
 experienceRouter.get('/experience', experienceController_1.getAll);
+experienceRouter.get('/admin/experience', verifyToken_1.verifyToken, experienceController_1.getAllAdmin);
+experienceRouter.get('/experience/:id', experienceController_1.getById);
 experienceRouter.patch('/experience/:id', verifyToken_1.verifyToken, experienceController_1.update);
+experienceRouter.patch('/experience/:id/visibility', verifyToken_1.verifyToken, experienceController_1.toggleVisibility);
 experienceRouter.delete('/experience/:id', verifyToken_1.verifyToken, experienceController_1.remove);
 exports.default = experienceRouter;
 //# sourceMappingURL=experience_route.js.map

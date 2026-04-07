@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteImage = exports.getImage = exports.upload = exports.remove = exports.update = exports.getById = exports.getAll = exports.create = void 0;
+exports.toggleVisibility = exports.deleteImage = exports.getImage = exports.upload = exports.remove = exports.update = exports.getById = exports.getAllAdmin = exports.getAll = exports.create = void 0;
 const Project_1 = __importDefault(require("../models/Project"));
 const fs = __importStar(require("fs"));
 const cloudinaryConfig_1 = __importDefault(require("../cloudinaryConfig"));
@@ -71,7 +71,7 @@ const create = async (req, res) => {
 exports.create = create;
 const getAll = async (req, res) => {
     try {
-        const projects = await Project_1.default.find().sort('-date -createdAt');
+        const projects = await Project_1.default.find({ hidden: { $ne: true } }).sort('-date -createdAt');
         res.status(200).json({
             projects,
         });
@@ -84,6 +84,34 @@ const getAll = async (req, res) => {
     }
 };
 exports.getAll = getAll;
+const getAllAdmin = async (req, res) => {
+    try {
+        const projects = await Project_1.default.find().sort('-date -createdAt');
+        res.status(200).json({ projects });
+        return;
+    }
+    catch (error) {
+        res.status(500).json({ error });
+    }
+};
+exports.getAllAdmin = getAllAdmin;
+const toggleVisibility = async (req, res) => {
+    try {
+        const project = await Project_1.default.findById(req.params.id);
+        if (!project) {
+            res.status(404).json({ message: "Project not found" });
+            return;
+        }
+        project.hidden = !project.hidden;
+        await project.save();
+        res.status(200).json({ ok: true, project });
+        return;
+    }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+};
+exports.toggleVisibility = toggleVisibility;
 const getById = async (req, res) => {
     try {
         const projectId = req.params.id;

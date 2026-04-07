@@ -25,6 +25,10 @@ const experienceSchema = new mongoose_1.Schema({
     url: {
         type: String,
     },
+    hidden: {
+        type: Boolean,
+        default: false,
+    },
     date: {
         type: [mongoose_1.Schema.Types.Mixed],
         required: true,

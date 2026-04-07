@@ -28,8 +28,10 @@ const storage = multer_1.default.diskStorage({
 const uploads = (0, multer_1.default)({ storage });
 projectRouter.post('/project', verifyToken_1.verifyToken, validation_1.validateProjectRegister, handleValidationErrors, projectController_1.create);
 projectRouter.get('/projects', projectController_1.getAll);
-projectRouter.get('/project/:id', projectController_1.getById);
+projectRouter.get('/admin/projects', verifyToken_1.verifyToken, projectController_1.getAllAdmin);
+projectRouter.get('/projects/:id', projectController_1.getById);
 projectRouter.patch('/project/:id', verifyToken_1.verifyToken, projectController_1.update);
+projectRouter.patch('/project/:id/visibility', verifyToken_1.verifyToken, projectController_1.toggleVisibility);
 projectRouter.delete('/project/:id', verifyToken_1.verifyToken, projectController_1.remove);
 projectRouter.post('/upload', verifyToken_1.verifyToken, uploads.single("file"), projectController_1.upload);
 projectRouter.delete("/delete-image", verifyToken_1.verifyToken, projectController_1.deleteImage);

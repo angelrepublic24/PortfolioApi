@@ -1,8 +1,7 @@
 import express from 'express';
-import { create, getAll, remove, update } from '../controllers/experienceController';
-import { validateExperienceRegister, validateProjectRegister } from '../helpers/validation';
+import { create, getAll, getAllAdmin, getById, remove, reorder, toggleVisibility, update } from '../controllers/experienceController';
+import { validateExperienceRegister } from '../helpers/validation';
 import { validationResult } from 'express-validator';
-import multer from 'multer'
 import { verifyToken } from '../middlewares/verifyToken';
 
 
@@ -17,7 +16,11 @@ const handleValidationErrors = (req, res, next) => {
 }
 experienceRouter.post('/experience', verifyToken, validateExperienceRegister, handleValidationErrors, create)
 experienceRouter.get('/experience', getAll)
+experienceRouter.get('/admin/experience', verifyToken, getAllAdmin)
+experienceRouter.patch('/experience/reorder/all', verifyToken, reorder)
+experienceRouter.get('/experience/:id', getById)
 experienceRouter.patch('/experience/:id', verifyToken, update)
+experienceRouter.patch('/experience/:id/visibility', verifyToken, toggleVisibility)
 experienceRouter.delete('/experience/:id', verifyToken, remove)
 
 export default experienceRouter

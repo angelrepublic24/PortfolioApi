@@ -7,7 +7,9 @@ interface IProject {
     url: string,
     image?: string,
     user: ObjectId,
-    date: number
+    date: number,
+    hidden?: boolean,
+    order?: number
 }
 
 
@@ -38,6 +40,14 @@ const projectSchema = new Schema({
     date: {
         type: Number,
         required: true,
+    },
+    hidden: {
+        type: Boolean,
+        default: false,
+    },
+    order: {
+        type: Number,
+        default: 0,
     }
 }, {
     timestamps: true

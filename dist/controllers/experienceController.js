@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.remove = exports.update = exports.getAll = exports.create = void 0;
+exports.toggleVisibility = exports.remove = exports.update = exports.getById = exports.getAllAdmin = exports.getAll = exports.create = void 0;
 const Experience_1 = __importDefault(require("../models/Experience"));
 const create = async (req, res) => {
     try {
@@ -51,7 +51,7 @@ const create = async (req, res) => {
 exports.create = create;
 const getAll = async (req, res) => {
     try {
-        const experience = await Experience_1.default.find().sort('-date');
+        const experience = await Experience_1.default.find({ hidden: { $ne: true } }).sort('-date');
         res.status(200).json({
             experience,
         });
@@ -65,6 +65,34 @@ const getAll = async (req, res) => {
     }
 };
 exports.getAll = getAll;
+const getAllAdmin = async (req, res) => {
+    try {
+        const experience = await Experience_1.default.find().sort('-date');
+        res.status(200).json({ experience });
+        return;
+    }
+    catch (error) {
+        res.status(500).json({ error, message: error.message });
+    }
+};
+exports.getAllAdmin = getAllAdmin;
+const toggleVisibility = async (req, res) => {
+    try {
+        const experience = await Experience_1.default.findById(req.params.id);
+        if (!experience) {
+            res.status(404).json({ message: "Experience not found" });
+            return;
+        }
+        experience.hidden = !experience.hidden;
+        await experience.save();
+        res.status(200).json({ ok: true, experience });
+        return;
+    }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+};
+exports.toggleVisibility = toggleVisibility;
 const getById = async (req, res) => {
     try {
         const experienceId = req.params.id;
@@ -80,6 +108,7 @@ const getById = async (req, res) => {
         });
     }
 };
+exports.getById = getById;
 const update = async (req, res) => {
     try {
         const body = req.body;

@@ -34,6 +34,14 @@ const experienceSchema = new Schema({
     url: {
         type: String,
     },
+    hidden: {
+        type: Boolean,
+        default: false,
+    },
+    order: {
+        type: Number,
+        default: 0,
+    },
     date: {
         type: [Schema.Types.Mixed],
         required: true,
