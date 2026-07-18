@@ -34,6 +34,9 @@ const experienceSchema = new Schema({
     url: {
         type: String,
     },
+    scope: {
+        type: String, // short one-line scope shown in the revision (experience) table
+    },
     hidden: {
         type: Boolean,
         default: false,

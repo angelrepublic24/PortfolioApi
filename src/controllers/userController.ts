@@ -34,7 +34,10 @@ const login = async (req: Request, res: Response) => {
     try{
         const body = req.body;
         const user = await User.findOne({email: body.email});
-        if(!user) res.status(401).send({msg: "email not found"});
+        if(!user) {
+            res.status(401).send({msg: "email not found"});
+            return
+        }
 
         if(!bcrypt.compareSync(body.password, user.password)){
              res.status(401).send({msg: "passwords do not match"});

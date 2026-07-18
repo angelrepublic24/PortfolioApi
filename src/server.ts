@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config'
 import { connectDB } from './config/db';
-import {userRouter, projectRouter, experienceRouter } from './routers';
+import {userRouter, projectRouter, experienceRouter, siteContentRouter } from './routers';
 import { corsConfig } from './config/cors';
 import cors from 'cors';
 
@@ -17,5 +17,6 @@ app.use(express.json());
 app.use('/api', userRouter);
 app.use('/api', projectRouter);
 app.use('/api', experienceRouter)
+app.use('/api', siteContentRouter)
 
 export default app;

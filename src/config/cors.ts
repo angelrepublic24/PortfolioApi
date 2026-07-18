@@ -2,13 +2,15 @@ import { CorsOptions } from "cors";
 
 const whiteList = [
   process.env.URL_FRONTEND,
+  process.env.URL_FRONTEND_WWW,
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "http://localhost:3010",
+  "http://127.0.0.1:3010",
 ].filter(Boolean) as string[];
 
 export const corsConfig: CorsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (e.g. server-to-server, curl, mobile apps)
     if (!origin) {
       callback(null, true);
       return;

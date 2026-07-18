@@ -9,7 +9,15 @@ interface IProject {
     user: ObjectId,
     date: number,
     hidden?: boolean,
-    order?: number
+    order?: number,
+    // --- Drawing Set design metadata (all optional; rendered when present, otherwise derived on the frontend) ---
+    summary?: string;            // short one-line plain-text subtitle for the project sheet
+    kind?: string;               // 'personal' | 'client' | 'employer'
+    client?: string;             // title-block "Client" label, e.g. "Personal", "Client · DRTS", "Employer"
+    role?: string;               // e.g. "Sole engineer", "Lead Developer & Architect"
+    status?: string;             // 'live' | 'in-dev' | 'pre-launch' | 'frontier' | 'archived'
+    disciplines?: string[];      // subset of ['WEB','APP','API','DB','PAY','OPS','3D']
+    featured?: boolean;          // true => rendered as a full project sheet; false => archive list
 }
 
 
@@ -20,7 +28,7 @@ const projectSchema = new Schema({
     },
     description: {
         type: String,
-        required: true, 
+        required: true,
     },
     lang: {
         type: [String],
@@ -28,7 +36,7 @@ const projectSchema = new Schema({
     url: {
         type: String,
     },
-    
+
     image: {
         type: String,
     },
@@ -48,7 +56,31 @@ const projectSchema = new Schema({
     order: {
         type: Number,
         default: 0,
-    }
+    },
+    // --- Drawing Set design metadata ---
+    summary: {
+        type: String,
+    },
+    kind: {
+        type: String,
+        enum: ["personal", "client", "employer"],
+    },
+    client: {
+        type: String,
+    },
+    role: {
+        type: String,
+    },
+    status: {
+        type: String,
+        enum: ["live", "in-dev", "pre-launch", "frontier", "archived"],
+    },
+    disciplines: {
+        type: [String],
+    },
+    featured: {
+        type: Boolean,
+    },
 }, {
     timestamps: true
 })
