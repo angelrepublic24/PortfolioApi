@@ -1,5 +1,10 @@
 import { model, models, ObjectId, Schema } from "mongoose";
 
+interface IProjectLink {
+    label: string;   // e.g. "Website", "iOS App", "Android App"
+    url: string;
+}
+
 interface IProject {
     name: string;
     description: string;
@@ -18,6 +23,7 @@ interface IProject {
     status?: string;             // 'live' | 'in-dev' | 'pre-launch' | 'frontier' | 'archived'
     disciplines?: string[];      // subset of ['WEB','APP','API','DB','PAY','OPS','3D']
     featured?: boolean;          // true => rendered as a full project sheet; false => archive list
+    links?: IProjectLink[];      // extra destinations (website + app stores…); `url` stays the primary one
 }
 
 
@@ -80,6 +86,18 @@ const projectSchema = new Schema({
     },
     featured: {
         type: Boolean,
+    },
+    links: {
+        type: [
+            new Schema<IProjectLink>(
+                {
+                    label: { type: String, required: true },
+                    url: { type: String, required: true },
+                },
+                { _id: false }
+            ),
+        ],
+        default: undefined,
     },
 }, {
     timestamps: true
