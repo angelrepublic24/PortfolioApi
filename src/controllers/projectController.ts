@@ -166,11 +166,11 @@ const upload = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       res.status(400).json({ message: "File not found" });
+      return;
     }
-    let fileName = req.file.originalname;
-    let fileSplit = fileName.split(".");
-    let mediaExt = fileSplit[1].toLowerCase();
-    const validExt = ["png", "gif", "jpg", "jpeg"];
+    // Last extension only — screenshot names like "Screenshot 10.15.32.png" contain dots.
+    const mediaExt = path.extname(req.file.originalname).slice(1).toLowerCase();
+    const validExt = ["png", "gif", "jpg", "jpeg", "webp"];
 
     if (!validExt.includes(mediaExt)) {
       fs.unlink(req.file.path, () => {

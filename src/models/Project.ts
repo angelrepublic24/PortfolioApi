@@ -5,6 +5,12 @@ interface IProjectLink {
     url: string;
 }
 
+interface IProjectImage {
+    url: string;
+    caption?: string;
+    publicId?: string;   // Cloudinary id, so the admin can delete the asset
+}
+
 interface IProject {
     name: string;
     description: string;
@@ -24,6 +30,7 @@ interface IProject {
     disciplines?: string[];      // subset of ['WEB','APP','API','DB','PAY','OPS','3D']
     featured?: boolean;          // true => rendered as a full project sheet; false => archive list
     links?: IProjectLink[];      // extra destinations (website + app stores…); `url` stays the primary one
+    gallery?: IProjectImage[];   // photos for the project's detail page, in display order
 }
 
 
@@ -93,6 +100,19 @@ const projectSchema = new Schema({
                 {
                     label: { type: String, required: true },
                     url: { type: String, required: true },
+                },
+                { _id: false }
+            ),
+        ],
+        default: undefined,
+    },
+    gallery: {
+        type: [
+            new Schema<IProjectImage>(
+                {
+                    url: { type: String, required: true },
+                    caption: { type: String },
+                    publicId: { type: String },
                 },
                 { _id: false }
             ),
